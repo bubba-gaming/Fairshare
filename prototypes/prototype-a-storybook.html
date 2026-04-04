@@ -57,7 +57,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .ob-input-wrap input::placeholder{color:var(--text3);font-weight:400}
 .ob-input-wrap input:focus{border-color:var(--accent1);background:var(--bg4);box-shadow:0 0 0 4px rgba(108,92,231,.15)}
 .ob-input-wrap .suffix{position:absolute;right:16px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:14px;font-weight:600;pointer-events:none}
-.ob-net{display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(81,207,102,.08);border:1px solid rgba(81,207,102,.15);border-radius:10px;margin-top:8px;font-size:13px;color:var(--text2)}
+.ob-net{display:flex;align-items:center;gap:6px;padding:8px 14px;background:rgba(81,207,102,.08);border:1px solid rgba(81,207,102,.15);border-radius:10px;margin-top:8px;font-size:13px;color:var(--text2);opacity:0;transform:scale(.85);max-height:0;overflow:hidden;transition:opacity .5s cubic-bezier(.4,0,.2,1),transform .5s cubic-bezier(.34,1.56,.64,1),max-height .5s cubic-bezier(.4,0,.2,1),margin .5s,padding .5s;margin-top:0;padding:0 14px}
+.ob-net.show{opacity:1;transform:scale(1);max-height:60px;margin-top:8px;padding:8px 14px}
 .ob-net .val{font-weight:700;color:var(--success);margin-left:auto}
 
 /* Welcome illustration */
@@ -81,6 +82,24 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
 .ob-ratio-labels{display:flex;justify-content:space-between;font-size:12px;color:var(--text3);font-weight:500}
 .ob-ratio-text{text-align:center;font-size:14px;color:var(--text2);margin-top:16px;line-height:1.6;opacity:0;transition:opacity .5s .6s}
 .ob-ratio-text.show{opacity:1}
+
+/* Custom ratio slider */
+.ob-custom-ratio{margin-top:20px;opacity:0;transform:translateY(10px);transition:opacity .6s cubic-bezier(.4,0,.2,1),transform .6s cubic-bezier(.4,0,.2,1);pointer-events:none}
+.ob-custom-ratio.show{opacity:1;transform:translateY(0);pointer-events:auto}
+.ob-custom-ratio-label{font-size:13px;font-weight:600;color:var(--text2);text-align:center;margin-bottom:10px}
+.ob-custom-slider-wrap{display:flex;align-items:center;gap:10px}
+.ob-slider-name{font-size:12px;color:var(--text3);font-weight:500;min-width:50px;text-align:center}
+.ob-slider{flex:1;-webkit-appearance:none;appearance:none;height:6px;border-radius:3px;background:linear-gradient(90deg,var(--accent1) 0%,var(--accent2) 100%);outline:none;cursor:pointer}
+.ob-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:white;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;transition:transform .2s}
+.ob-slider::-webkit-slider-thumb:hover{transform:scale(1.15)}
+.ob-slider::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:white;box-shadow:0 2px 8px rgba(0,0,0,.3);cursor:pointer;border:none}
+.ob-custom-ratio-values{display:flex;justify-content:space-between;margin-top:6px;font-size:14px;font-weight:700}
+.ob-custom-ratio-values span:first-child{color:var(--accent1b)}
+.ob-custom-ratio-values span:last-child{color:var(--accent2)}
+
+/* Adjust text */
+.ob-adjust-text{text-align:center;font-size:14px;color:var(--text2);margin-top:14px;line-height:1.6;opacity:0;transition:opacity .6s cubic-bezier(.4,0,.2,1)}
+.ob-adjust-text.show{opacity:1}
 
 /* Steps (Screen 5) */
 .ob-steps{width:100%;max-width:320px;margin-bottom:28px}
@@ -117,8 +136,8 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
       <div class="ob-circle c1"></div>
       <div class="ob-circle c2"></div>
     </div>
-    <div class="ob-heading">Hej! 👋</div>
-    <div class="ob-sub">Välkommen till <strong>FairShare</strong><br>Vi hjälper er dela hushållskostnader rättvist – baserat på vad ni tjänar, inte 50/50.</div>
+    <div class="ob-heading">Välkommen till FairShare</div>
+    <div class="ob-sub">Appen som hjälper er dela hushållskostnader rättvist, baserat på vad man tjänar.</div>
     <button class="ob-btn" onclick="goTo(1)">Kom igång</button>
     <button class="ob-skip" onclick="finish()">Hoppa över</button>
   </div>
@@ -143,7 +162,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="ob-screen right" id="screen2">
     <button class="ob-back" onclick="goTo(1)">←</button>
     <div class="ob-heading">Vad tjänar ni? 💰</div>
-    <div class="ob-sub">Fyll i bruttolön (före skatt). Vi beräknar netto automatiskt.</div>
+    <div class="ob-sub">Fyll i bruttolön (före skatt).</div>
     <div class="ob-input-group">
       <div class="ob-input-label"><span class="dot" style="background:var(--accent1)"></span> <span id="salLabel1">Person 1</span></div>
       <div class="ob-input-wrap"><input type="number" id="obGross1" placeholder="Bruttolön" oninput="updateSalary()"><span class="suffix">kr</span></div>
@@ -161,7 +180,7 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
   <div class="ob-screen right" id="screen3">
     <button class="ob-back" onclick="goTo(2)">←</button>
     <div class="ob-heading">Rättvis fördelning ⚖️</div>
-    <div class="ob-sub">Den som tjänar mer betalar en större del – så att ni båda behåller lika mycket i procent.</div>
+    <div class="ob-sub">Enligt de flesta storbanker är den mest rättvisa fördelningen baserat på inkomst och livssituation. Den som tjänar mer betalar proportionellt en större del av kostnaderna.</div>
     <div class="ob-ratio-area">
       <div class="ob-ratio-badges">
         <div class="ob-ratio-badge p1" id="rBadge1">50%</div>
@@ -176,6 +195,19 @@ body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var
         <span id="rLabel2">Person 2</span>
       </div>
       <div class="ob-ratio-text" id="rText"></div>
+      <div class="ob-custom-ratio" id="customRatioArea">
+        <div class="ob-custom-ratio-label">Egen fördelning</div>
+        <div class="ob-custom-slider-wrap">
+          <span class="ob-slider-name" id="sliderName1">Person 1</span>
+          <input type="range" min="1" max="99" value="50" class="ob-slider" id="obCustomSlider" oninput="updateCustomRatio()">
+          <span class="ob-slider-name" id="sliderName2">Person 2</span>
+        </div>
+        <div class="ob-custom-ratio-values">
+          <span id="customVal1">50%</span>
+          <span id="customVal2">50%</span>
+        </div>
+      </div>
+      <div class="ob-adjust-text" id="adjustText">Ni kan alltid justera fördelningen hur ni vill.</div>
     </div>
     <button class="ob-btn" onclick="goTo(4)">Jag förstår!</button>
   </div>
@@ -245,17 +277,46 @@ function checkNames(){
   document.getElementById('btnNames').disabled=!(n1&&n2);
 }
 
+var netShown=false;
+function tickUp(el,target,duration){
+  var start=0;var startTime=null;
+  function step(ts){
+    if(!startTime)startTime=ts;
+    var p=Math.min((ts-startTime)/duration,1);
+    var ease=1-Math.pow(1-p,3);
+    var val=Math.round(ease*target);
+    el.textContent=fmt(val)+' kr';
+    if(p<1)requestAnimationFrame(step);
+  }
+  requestAnimationFrame(step);
+}
 function updateSalary(){
   var g1=parseFloat(document.getElementById('obGross1').value)||0;
   var g2=parseFloat(document.getElementById('obGross2').value)||0;
   data.gross1=g1;data.gross2=g2;
   data.net1=calcNet(g1);data.net2=calcNet(g2);
-  document.getElementById('obNet1').textContent=fmt(data.net1)+' kr';
-  document.getElementById('obNet2').textContent=fmt(data.net2)+' kr';
   document.getElementById('btnSalary').disabled=!(g1>0&&g2>0);
   var total=data.net1+data.net2;
   if(total>0){data.ratio1=Math.round(data.net1/total*100);data.ratio2=100-data.ratio1}
   else{data.ratio1=50;data.ratio2=50}
+  // Show net boxes only when both salaries are filled
+  var bothFilled=g1>0&&g2>0;
+  var net1El=document.getElementById('obNet1').parentElement;
+  var net2El=document.getElementById('obNet2').parentElement;
+  if(bothFilled&&!netShown){
+    netShown=true;
+    net1El.classList.add('show');
+    net2El.classList.add('show');
+    tickUp(document.getElementById('obNet1'),data.net1,800);
+    tickUp(document.getElementById('obNet2'),data.net2,800);
+  } else if(bothFilled&&netShown){
+    document.getElementById('obNet1').textContent=fmt(data.net1)+' kr';
+    document.getElementById('obNet2').textContent=fmt(data.net2)+' kr';
+  } else {
+    netShown=false;
+    net1El.classList.remove('show');
+    net2El.classList.remove('show');
+  }
 }
 
 function goTo(idx){
@@ -301,11 +362,12 @@ function animateRatio(){
   var n1=data.name1||'Person 1',n2=data.name2||'Person 2';
   document.getElementById('rLabel1').textContent=n1;
   document.getElementById('rLabel2').textContent=n2;
+  document.getElementById('sliderName1').textContent=n1;
+  document.getElementById('sliderName2').textContent=n2;
   var b1=document.getElementById('rBadge1');
   var b2=document.getElementById('rBadge2');
   b1.textContent=data.ratio1+'%';
   b2.textContent=data.ratio2+'%';
-  // Start from hidden
   b1.classList.remove('show');b2.classList.remove('show');
   var f1=document.getElementById('rFill1');
   var f2=document.getElementById('rFill2');
@@ -313,6 +375,14 @@ function animateRatio(){
   var rt=document.getElementById('rText');
   rt.classList.remove('show');
   rt.textContent=n1+' betalar '+data.ratio1+'% och '+n2+' betalar '+data.ratio2+'% av gemensamma utgifter.';
+  // Reset custom ratio area and adjust text
+  var cra=document.getElementById('customRatioArea');
+  var at=document.getElementById('adjustText');
+  cra.classList.remove('show');
+  at.classList.remove('show');
+  document.getElementById('obCustomSlider').value=data.ratio1;
+  document.getElementById('customVal1').textContent=data.ratio1+'%';
+  document.getElementById('customVal2').textContent=data.ratio2+'%';
 
   setTimeout(function(){
     b1.classList.add('show');
@@ -322,7 +392,26 @@ function animateRatio(){
       f2.style.width=data.ratio2+'%';
       rt.classList.add('show');
     },300);
+    // After 2.5s fade in custom ratio slider
+    setTimeout(function(){
+      cra.classList.add('show');
+      // Then fade in adjust text after slider is visible
+      setTimeout(function(){at.classList.add('show')},600);
+    },2500);
   },200);
+}
+
+function updateCustomRatio(){
+  var v=parseInt(document.getElementById('obCustomSlider').value);
+  data.ratio1=v;data.ratio2=100-v;
+  document.getElementById('customVal1').textContent=v+'%';
+  document.getElementById('customVal2').textContent=(100-v)+'%';
+  document.getElementById('rBadge1').textContent=v+'%';
+  document.getElementById('rBadge2').textContent=(100-v)+'%';
+  document.getElementById('rFill1').style.width=v+'%';
+  document.getElementById('rFill2').style.width=(100-v)+'%';
+  var n1=data.name1||'Person 1',n2=data.name2||'Person 2';
+  document.getElementById('rText').textContent=n1+' betalar '+v+'% och '+n2+' betalar '+(100-v)+'% av gemensamma utgifter.';
 }
 
 function animateSteps(){
