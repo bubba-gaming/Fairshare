@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0,user-scalable=no">
+<title>FairShare – Prototyp B: Floating Card</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#0f0f1a;--bg2:#1a1a2e;--bg3:#232342;--bg4:#2d2d52;--text:#e8e8f0;--text2:#a0a0c0;--text3:#6a6a90;--accent1:#6c5ce7;--accent1b:#8b7cf0;--accent2:#00cec9;--accent2b:#55efc4;--accent3:#fd79a8;--accent4:#fdcb6e;--danger:#ff6b6b;--success:#51cf66;--card-radius:20px}
+*{margin:0;padding:0;box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;overflow:hidden}
+
+/* Mock app behind */
+.mock-app{position:fixed;inset:0;padding:16px;max-width:480px;margin:0 auto}
+.mock-tabs{display:flex;gap:4px;background:var(--bg2);border-radius:16px;padding:4px;margin-bottom:16px}
+.mock-tab{flex:1;padding:12px 8px;border-radius:12px;background:transparent;text-align:center;font-size:12px;color:var(--text3);font-weight:600}
+.mock-tab.active{background:var(--accent1);color:white}
+.mock-card{background:var(--bg2);border-radius:var(--card-radius);padding:24px;margin-bottom:16px;border:1px solid rgba(255,255,255,.05);height:80px}
+.mock-card.tall{height:140px}
+
+/* Backdrop */
+.ob-backdrop{position:fixed;inset:0;z-index:500;background:rgba(15,15,26,.85);backdrop-filter:blur(8px);transition:opacity .5s}
+
+/* Card */
+.ob-card{position:fixed;z-index:600;top:50%;left:50%;transform:translate(-50%,-50%) scale(1);max-width:380px;width:calc(100vw - 48px);background:rgba(26,26,46,.95);border:1px solid rgba(255,255,255,.08);border-radius:var(--card-radius);padding:28px 24px 24px;box-shadow:0 24px 64px rgba(0,0,0,.5);backdrop-filter:blur(20px);transition:transform .3s cubic-bezier(.4,0,.2,1),opacity .3s;will-change:transform}
+.ob-card.breathe-out{transform:translate(-50%,-50%) scale(.95);opacity:.8}
+
+/* Progress bar (Stories style) */
+.ob-progress{display:flex;gap:4px;margin-bottom:24px}
+.ob-progress-seg{flex:1;height:4px;border-radius:2px;background:var(--bg4);overflow:hidden;position:relative}
+.ob-progress-seg .fill{position:absolute;inset:0;background:linear-gradient(90deg,var(--accent1),var(--accent1b));transform:scaleX(0);transform-origin:left;transition:transform .4s cubic-bezier(.4,0,.2,1)}
+.ob-progress-seg.done .fill{transform:scaleX(1)}
+.ob-progress-seg.current .fill{transform:scaleX(1);transition:transform .6s}
+
+/* Screen content containers */
+.ob-content{display:none;animation:contentIn .35s ease-out}
+.ob-content.active{display:block}
+@keyframes contentIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+/* Typography */
+.ob-heading{font-size:24px;font-weight:800;text-align:center;margin-bottom:8px}
+.ob-sub{font-size:14px;color:var(--text2);text-align:center;line-height:1.6;margin-bottom:24px}
+
+/* Buttons */
+.ob-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent1),#8b5cf6);color:white;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s;margin-top:8px}
+.ob-btn:hover{transform:translateY(-1px);box-shadow:0 6px 20px rgba(108,92,231,.4)}
+.ob-btn:active{transform:scale(.97)}
+.ob-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
+.ob-skip{display:block;width:100%;background:none;border:none;color:var(--text3);font-family:inherit;font-size:13px;cursor:pointer;margin-top:12px;padding:8px}
+.ob-skip:hover{color:var(--text2)}
+.ob-back-row{display:flex;align-items:center;margin-bottom:16px}
+.ob-back-btn{background:var(--bg3);border:none;color:var(--text2);width:34px;height:34px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.ob-back-btn:hover{background:var(--bg4)}
+
+/* Illustration */
+.ob-illus{display:flex;justify-content:center;margin-bottom:20px}
+.ob-illus-circles{position:relative;width:80px;height:80px}
+.ob-illus-c{position:absolute;width:52px;height:52px;border-radius:50%;opacity:.85}
+.ob-illus-c.c1{background:var(--accent1);top:0;left:0;animation:bfloat1 2.5s ease-in-out infinite}
+.ob-illus-c.c2{background:var(--accent2);bottom:0;right:0;animation:bfloat2 2.5s ease-in-out infinite}
+@keyframes bfloat1{0%,100%{transform:translate(0,0)}50%{transform:translate(3px,-5px)}}
+@keyframes bfloat2{0%,100%{transform:translate(0,0)}50%{transform:translate(-3px,5px)}}
+
+/* Inputs */
+.ob-input-group{margin-bottom:14px}
+.ob-input-label{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:500;margin-bottom:6px;color:var(--text2)}
+.ob-input-label .dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.ob-input-wrap{position:relative}
+.ob-input-wrap input{width:100%;padding:12px 44px 12px 14px;background:var(--bg3);border:2px solid transparent;border-radius:12px;color:var(--text);font-family:inherit;font-size:15px;font-weight:600;outline:none;transition:all .3s}
+.ob-input-wrap input::placeholder{color:var(--text3);font-weight:400}
+.ob-input-wrap input:focus{border-color:var(--accent1);background:var(--bg4);box-shadow:0 0 0 4px rgba(108,92,231,.15)}
+.ob-input-wrap .suffix{position:absolute;right:14px;top:50%;transform:translateY(-50%);color:var(--text3);font-size:13px;font-weight:600;pointer-events:none}
+.ob-net{display:flex;align-items:center;gap:6px;padding:6px 12px;background:rgba(81,207,102,.08);border:1px solid rgba(81,207,102,.15);border-radius:8px;margin-top:6px;font-size:12px;color:var(--text2)}
+.ob-net .val{font-weight:700;color:var(--success);margin-left:auto}
+
+/* Ratio viz */
+.ob-ratio-badges{display:flex;justify-content:center;gap:12px;margin-bottom:12px}
+.ob-ratio-badge{padding:8px 16px;border-radius:24px;font-size:18px;font-weight:800;min-width:70px;text-align:center;opacity:0;transform:scale(.8);transition:all .4s cubic-bezier(.34,1.56,.64,1)}
+.ob-ratio-badge.show{opacity:1;transform:scale(1)}
+.ob-ratio-badge.p1{background:rgba(108,92,231,.2);color:var(--accent1b);border:2px solid rgba(108,92,231,.3)}
+.ob-ratio-badge.p2{background:rgba(0,206,201,.2);color:var(--accent2);border:2px solid rgba(0,206,201,.3)}
+.ob-ratio-bar{height:12px;border-radius:6px;background:var(--bg3);overflow:hidden;display:flex;margin:8px 0}
+.ob-ratio-fill1{background:linear-gradient(90deg,var(--accent1),var(--accent1b));width:50%;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.ob-ratio-fill2{background:linear-gradient(90deg,var(--accent2),var(--accent2b));width:50%;transition:width .8s cubic-bezier(.34,1.56,.64,1)}
+.ob-ratio-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);font-weight:500}
+.ob-ratio-text{text-align:center;font-size:13px;color:var(--text2);margin-top:12px;line-height:1.5;opacity:0;transition:opacity .5s .5s}
+.ob-ratio-text.show{opacity:1}
+
+/* Steps */
+.ob-step-row{display:flex;align-items:center;gap:12px;padding:12px;background:var(--bg3);border-radius:12px;margin-bottom:8px;opacity:0;transform:translateY(12px);transition:all .35s cubic-bezier(.4,0,.2,1)}
+.ob-step-row.show{opacity:1;transform:translateY(0)}
+.ob-step-row .icon{font-size:20px;flex-shrink:0}
+.ob-step-row .text{font-size:13px;font-weight:600}
+
+/* Summary */
+.ob-sum{background:var(--bg3);border-radius:14px;padding:16px;margin-bottom:16px}
+.ob-sum-row{display:flex;justify-content:space-between;padding:6px 0;font-size:13px}
+.ob-sum-row .l{color:var(--text2);display:flex;align-items:center;gap:6px}
+.ob-sum-row .l .dot{width:6px;height:6px;border-radius:50%}
+.ob-sum-row .v{font-weight:700}
+.ob-sum-div{height:1px;background:rgba(255,255,255,.06);margin:6px 0}
+.ob-sum-ratio{display:flex;justify-content:center;gap:8px;margin-top:8px}
+
+/* Confetti */
+.ob-confetti{position:absolute;inset:0;pointer-events:none;overflow:hidden;border-radius:var(--card-radius)}
+.ob-conf-dot{position:absolute;width:5px;height:5px;border-radius:50%;opacity:0;animation:confUp 2s ease-out forwards}
+@keyframes confUp{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-160px) scale(0)}}
+</style>
+</head>
+<body>
+
+<!-- Mock app -->
+<div class="mock-app">
+  <div class="mock-tabs">
+    <div class="mock-tab active">⚙️ Inställningar</div>
+    <div class="mock-tab">💰 Utgifter</div>
+    <div class="mock-tab">📊 Översikt</div>
+  </div>
+  <div class="mock-card"></div>
+  <div class="mock-card tall"></div>
+  <div class="mock-card"></div>
+  <div class="mock-card"></div>
+</div>
+
+<!-- Backdrop -->
+<div class="ob-backdrop" id="obBackdrop"></div>
+
+<!-- Floating Card -->
+<div class="ob-card" id="obCard">
+  <div class="ob-progress" id="obProgress"></div>
+
+  <!-- Screen 0: Welcome -->
+  <div class="ob-content active" id="c0">
+    <div class="ob-illus"><div class="ob-illus-circles"><div class="ob-illus-c c1"></div><div class="ob-illus-c c2"></div></div></div>
+    <div class="ob-heading">Hej! 👋</div>
+    <div class="ob-sub">Välkommen till <strong>FairShare</strong><br>Vi hjälper er dela hushållskostnader rättvist – baserat på inkomst, inte 50/50.</div>
+    <button class="ob-btn" onclick="goTo(1)">Kom igång</button>
+    <button class="ob-skip" onclick="finish()">Hoppa över</button>
+  </div>
+
+  <!-- Screen 1: Names -->
+  <div class="ob-content" id="c1">
+    <div class="ob-back-row"><button class="ob-back-btn" onclick="goTo(0)">←</button></div>
+    <div class="ob-heading">Vilka bor ihop? 🏠</div>
+    <div class="ob-sub">Skriv era namn så appen blir personlig.</div>
+    <div class="ob-input-group">
+      <div class="ob-input-label"><span class="dot" style="background:var(--accent1)"></span> Person 1</div>
+      <div class="ob-input-wrap"><input type="text" id="obName1" placeholder="Ditt namn" oninput="checkNames()"></div>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-input-label"><span class="dot" style="background:var(--accent2)"></span> Person 2</div>
+      <div class="ob-input-wrap"><input type="text" id="obName2" placeholder="Partnerns namn" oninput="checkNames()"></div>
+    </div>
+    <button class="ob-btn" id="btnNames" disabled onclick="goTo(2)">Nästa</button>
+  </div>
+
+  <!-- Screen 2: Salaries -->
+  <div class="ob-content" id="c2">
+    <div class="ob-back-row"><button class="ob-back-btn" onclick="goTo(1)">←</button></div>
+    <div class="ob-heading">Vad tjänar ni? 💰</div>
+    <div class="ob-sub">Ange bruttolön (före skatt). Netto beräknas automatiskt.</div>
+    <div class="ob-input-group">
+      <div class="ob-input-label"><span class="dot" style="background:var(--accent1)"></span> <span id="salL1">Person 1</span></div>
+      <div class="ob-input-wrap"><input type="number" id="obGross1" placeholder="Bruttolön" oninput="updateSalary()"><span class="suffix">kr</span></div>
+      <div class="ob-net">Netto: <span class="val" id="obNet1">0 kr</span></div>
+    </div>
+    <div class="ob-input-group">
+      <div class="ob-input-label"><span class="dot" style="background:var(--accent2)"></span> <span id="salL2">Person 2</span></div>
+      <div class="ob-input-wrap"><input type="number" id="obGross2" placeholder="Bruttolön" oninput="updateSalary()"><span class="suffix">kr</span></div>
+      <div class="ob-net">Netto: <span class="val" id="obNet2">0 kr</span></div>
+    </div>
+    <button class="ob-btn" id="btnSal" disabled onclick="goTo(3)">Nästa</button>
+  </div>
+
+  <!-- Screen 3: Ratio -->
+  <div class="ob-content" id="c3">
+    <div class="ob-back-row"><button class="ob-back-btn" onclick="goTo(2)">←</button></div>
+    <div class="ob-heading">Rättvis fördelning ⚖️</div>
+    <div class="ob-sub">Den som tjänar mer betalar en större andel – rättvist för båda.</div>
+    <div class="ob-ratio-badges">
+      <div class="ob-ratio-badge p1" id="rB1">50%</div>
+      <div class="ob-ratio-badge p2" id="rB2">50%</div>
+    </div>
+    <div class="ob-ratio-bar"><div class="ob-ratio-fill1" id="rF1"></div><div class="ob-ratio-fill2" id="rF2"></div></div>
+    <div class="ob-ratio-labels"><span id="rL1">Person 1</span><span id="rL2">Person 2</span></div>
+    <div class="ob-ratio-text" id="rText"></div>
+    <button class="ob-btn" onclick="goTo(4)" style="margin-top:16px">Jag förstår!</button>
+  </div>
+
+  <!-- Screen 4: How it works -->
+  <div class="ob-content" id="c4">
+    <div class="ob-back-row"><button class="ob-back-btn" onclick="goTo(3)">←</button></div>
+    <div class="ob-heading">Så funkar det 📱</div>
+    <div class="ob-sub" style="margin-bottom:16px">Tre enkla steg varje månad.</div>
+    <div class="ob-step-row" id="s1"><span class="icon">➕</span><span class="text">Lägg till gemensamma utgifter</span></div>
+    <div class="ob-step-row" id="s2"><span class="icon">⚖️</span><span class="text">Automatisk fördelning beräknas</span></div>
+    <div class="ob-step-row" id="s3"><span class="icon">📊</span><span class="text">Se översikten – vem är skyldig vad</span></div>
+    <button class="ob-btn" onclick="goTo(5)" style="margin-top:16px">Visa mig!</button>
+  </div>
+
+  <!-- Screen 5: Ready -->
+  <div class="ob-content" id="c5" style="position:relative">
+    <div class="ob-confetti" id="confetti"></div>
+    <div class="ob-heading">Ni är redo! 🎉</div>
+    <div class="ob-sub">Sammanfattning av era inställningar.</div>
+    <div class="ob-sum">
+      <div class="ob-sum-row"><span class="l"><span class="dot" style="background:var(--accent1)"></span><span id="sN1">—</span></span><span class="v" id="sV1">—</span></div>
+      <div class="ob-sum-row"><span class="l"><span class="dot" style="background:var(--accent2)"></span><span id="sN2">—</span></span><span class="v" id="sV2">—</span></div>
+      <div class="ob-sum-div"></div>
+      <div class="ob-sum-ratio">
+        <div class="ob-ratio-badge p1 show" id="sB1" style="font-size:14px;padding:5px 12px">—</div>
+        <div class="ob-ratio-badge p2 show" id="sB2" style="font-size:14px;padding:5px 12px">—</div>
+      </div>
+    </div>
+    <button class="ob-btn" onclick="finish()">Börja använda FairShare</button>
+  </div>
+</div>
+
+<script>
+var cur=0,total=6;
+var D={name1:'',name2:'',gross1:0,gross2:0,net1:0,net2:0,r1:50,r2:50};
+
+// Build progress bar
+(function(){var p=document.getElementById('obProgress');for(var i=0;i<total;i++){var s=document.createElement('div');s.className='ob-progress-seg'+(i===0?' current':'');s.innerHTML='<div class="fill"></div>';p.appendChild(s)}})();
+
+function calcNet(g){if(g<=0)return 0;var t=g*.32;if(g*12>615700)t+=(g-615700/12)*.20;return Math.round(g-t+g*.12)}
+function fmt(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,' ')}
+
+function checkNames(){
+  D.name1=document.getElementById('obName1').value.trim();
+  D.name2=document.getElementById('obName2').value.trim();
+  document.getElementById('btnNames').disabled=!(D.name1&&D.name2);
+}
+
+function updateSalary(){
+  D.gross1=parseFloat(document.getElementById('obGross1').value)||0;
+  D.gross2=parseFloat(document.getElementById('obGross2').value)||0;
+  D.net1=calcNet(D.gross1);D.net2=calcNet(D.gross2);
+  document.getElementById('obNet1').textContent=fmt(D.net1)+' kr';
+  document.getElementById('obNet2').textContent=fmt(D.net2)+' kr';
+  document.getElementById('btnSal').disabled=!(D.gross1>0&&D.gross2>0);
+  var tot=D.net1+D.net2;
+  if(tot>0){D.r1=Math.round(D.net1/tot*100);D.r2=100-D.r1}
+}
+
+function goTo(idx){
+  if(idx===cur)return;
+  var card=document.getElementById('obCard');
+
+  // Update labels
+  if(idx===2){document.getElementById('salL1').textContent=D.name1||'Person 1';document.getElementById('salL2').textContent=D.name2||'Person 2'}
+
+  // Breathe out
+  card.classList.add('breathe-out');
+
+  setTimeout(function(){
+    // Hide old, show new
+    document.getElementById('c'+cur).classList.remove('active');
+    document.getElementById('c'+idx).classList.add('active');
+
+    // Update progress
+    var segs=document.querySelectorAll('.ob-progress-seg');
+    for(var i=0;i<segs.length;i++){
+      segs[i].className='ob-progress-seg';
+      if(i<idx)segs[i].className='ob-progress-seg done';
+      if(i===idx)segs[i].className='ob-progress-seg current';
+    }
+
+    cur=idx;
+
+    // Breathe in
+    setTimeout(function(){
+      card.classList.remove('breathe-out');
+      // Trigger screen-specific animations
+      if(idx===3)setTimeout(animateRatio,250);
+      if(idx===4)setTimeout(animateSteps,150);
+      if(idx===5)setTimeout(animateSummary,150);
+    },50);
+  },200);
+}
+
+function animateRatio(){
+  var n1=D.name1||'Person 1',n2=D.name2||'Person 2';
+  document.getElementById('rL1').textContent=n1;
+  document.getElementById('rL2').textContent=n2;
+  var b1=document.getElementById('rB1'),b2=document.getElementById('rB2');
+  b1.textContent=D.r1+'%';b2.textContent=D.r2+'%';
+  b1.classList.remove('show');b2.classList.remove('show');
+  document.getElementById('rF1').style.width='50%';
+  document.getElementById('rF2').style.width='50%';
+  var rt=document.getElementById('rText');rt.classList.remove('show');
+  rt.textContent=n1+' betalar '+D.r1+'% och '+n2+' betalar '+D.r2+'%.';
+
+  setTimeout(function(){
+    b1.classList.add('show');
+    setTimeout(function(){b2.classList.add('show')},120);
+    setTimeout(function(){
+      document.getElementById('rF1').style.width=D.r1+'%';
+      document.getElementById('rF2').style.width=D.r2+'%';
+      rt.classList.add('show');
+    },250);
+  },150);
+}
+
+function animateSteps(){
+  ['s1','s2','s3'].forEach(function(id){document.getElementById(id).classList.remove('show')});
+  ['s1','s2','s3'].forEach(function(id,i){
+    setTimeout(function(){document.getElementById(id).classList.add('show')},i*250+50);
+  });
+}
+
+function animateSummary(){
+  document.getElementById('sN1').textContent=D.name1||'Person 1';
+  document.getElementById('sN2').textContent=D.name2||'Person 2';
+  document.getElementById('sV1').textContent='Netto: '+fmt(D.net1)+' kr';
+  document.getElementById('sV2').textContent='Netto: '+fmt(D.net2)+' kr';
+  document.getElementById('sB1').textContent=D.r1+'%';
+  document.getElementById('sB2').textContent=D.r2+'%';
+  // Confetti
+  var c=document.getElementById('confetti');c.innerHTML='';
+  var cols=['#6c5ce7','#00cec9','#fd79a8','#fdcb6e','#55efc4'];
+  for(var i=0;i<24;i++){var d=document.createElement('div');d.className='ob-conf-dot';d.style.left=Math.random()*100+'%';d.style.bottom=Math.random()*20+'%';d.style.background=cols[i%cols.length];d.style.animationDelay=Math.random()+'s';d.style.animationDuration=(1.4+Math.random())+'s';c.appendChild(d)}
+}
+
+function finish(){
+  var bd=document.getElementById('obBackdrop');
+  var card=document.getElementById('obCard');
+  card.style.transform='translate(-50%,-50%) scale(.8)';card.style.opacity='0';
+  bd.style.opacity='0';
+  setTimeout(function(){
+    bd.style.display='none';card.style.display='none';
+    document.body.insertAdjacentHTML('beforeend','<div style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:var(--bg);color:var(--text);font-family:Inter,sans-serif;text-align:center;padding:20px"><div><div style="font-size:48px;margin-bottom:16px">✅</div>Tutorial klar!<br><span style="color:var(--text3);font-size:14px">I den riktiga appen visas huvudvyn här.</span></div></div>');
+  },500);
+}
+</script>
+</body>
+</html>
