@@ -256,19 +256,6 @@ input[type="range"]::-webkit-slider-thumb{-webkit-appearance:none;width:28px;hei
 .help-page .help-step{display:flex;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.04)}
 .help-page .help-step .hs-num{width:28px;height:28px;border-radius:50%;background:var(--accent1);color:white;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;flex-shrink:0}
 .help-page .help-step .hs-text{font-size:13px;color:var(--text2);line-height:1.6}
-.help-tour-btn{width:100%;padding:14px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent1),#8b5cf6);color:white;font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;margin-top:16px;display:flex;align-items:center;justify-content:center;gap:8px}
-.tour-backdrop{position:fixed;top:0;left:0;right:0;bottom:0;z-index:700;display:none;pointer-events:none}
-.tour-backdrop.show{display:block}
-.tour-highlight{position:fixed;z-index:701;border-radius:16px;box-shadow:0 0 0 4000px rgba(0,0,0,.75);pointer-events:none;transition:all .4s cubic-bezier(.4,0,.2,1)}
-.tour-bubble{position:fixed;z-index:703;background:var(--bg2);border:2px solid var(--accent1);border-radius:18px;padding:20px;max-width:320px;width:calc(100vw - 48px);box-shadow:0 12px 40px rgba(0,0,0,.5);pointer-events:auto}
-.tour-bubble .tb-step{font-size:11px;color:var(--accent1b);font-weight:700;text-transform:uppercase;letter-spacing:1px;margin-bottom:6px}
-.tour-bubble .tb-msg{font-size:14px;color:var(--text);line-height:1.6;margin-bottom:14px;white-space:pre-line}
-.tour-bubble .tb-btns{display:flex;gap:8px}
-.tour-bubble .tb-btns button{flex:1;padding:10px;border:none;border-radius:10px;font-family:inherit;font-size:13px;font-weight:700;cursor:pointer}
-.tour-bubble .tb-next{background:var(--accent1);color:white}
-.tour-bubble .tb-skip{background:var(--bg3);color:var(--text3)}
-.tour-close{position:fixed;top:16px;right:16px;z-index:710;width:40px;height:40px;border-radius:50%;background:rgba(0,0,0,.6);border:2px solid rgba(255,255,255,.2);color:white;font-size:20px;cursor:pointer;display:none;align-items:center;justify-content:center;backdrop-filter:blur(8px)}
-.tour-close.show{display:flex}
 .app-footer{text-align:center;padding:20px 16px 30px;color:var(--text3);font-size:11px;position:relative;z-index:1}.app-footer span{opacity:.5}
 input[type=number]::-webkit-inner-spin-button,input[type=number]::-webkit-outer-spin-button{-webkit-appearance:none;margin:0}
 input[type=number]{-moz-appearance:textfield}
@@ -284,6 +271,8 @@ input[type=number]{-moz-appearance:textfield}
 .ob-heading{font-size:28px;font-weight:800;text-align:center;margin-bottom:12px;line-height:1.2}
 .ob-sub{font-size:15px;color:var(--text2);text-align:center;line-height:1.6;max-width:340px;margin-bottom:32px}
 .ob-btn{width:100%;max-width:320px;padding:16px;border:none;border-radius:14px;background:linear-gradient(135deg,var(--accent1),#8b5cf6);color:white;font-family:inherit;font-size:16px;font-weight:700;cursor:pointer;transition:transform .2s,box-shadow .2s}
+.ob-btn-secondary{width:100%;max-width:320px;padding:14px;border:2px solid var(--accent1);border-radius:14px;background:transparent;color:var(--accent1);font-family:inherit;font-size:15px;font-weight:700;cursor:pointer;transition:transform .2s,background .2s;margin-bottom:8px}
+.ob-btn-secondary:active{background:rgba(108,92,231,.15);transform:scale(.97)}
 .ob-btn:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(108,92,231,.4)}
 .ob-btn:active{transform:scale(.97)}
 .ob-btn:disabled{opacity:.4;cursor:not-allowed;transform:none;box-shadow:none}
@@ -401,6 +390,7 @@ input[type=number]{-moz-appearance:textfield}
       </div>
       <div class="ob-adjust-text" id="obAdjustText">Ni kan alltid justera fördelningen hur ni vill.</div>
     </div>
+    <button class="ob-btn-secondary" id="obCustomBtn" onclick="obShowCustomRatio()" style="display:none">Egen uppdelning</button>
     <button class="ob-btn" onclick="obGoTo(4)">Jag förstår!</button>
   </div>
   <div class="ob-screen right" id="obScreen4">
@@ -417,6 +407,45 @@ input[type=number]{-moz-appearance:textfield}
     <button class="ob-btn" onclick="obGoTo(5)">Visa mig!</button>
   </div>
   <div class="ob-screen right" id="obScreen5">
+    <button class="ob-back" onclick="obGoTo(4)">&#8592;</button>
+    <div class="ob-heading">Lägg till utgifter &#128176;</div>
+    <div class="ob-sub">Under Utgifter-fliken lägger ni till gemensamma kostnader.</div>
+    <div class="ob-steps">
+      <div class="ob-step" id="obStep4"><div class="ob-step-icon">&#128221;</div><div class="ob-step-text">Fyll i beskrivning, belopp och kategori</div></div>
+      <div class="ob-step-line"></div>
+      <div class="ob-step" id="obStep5"><div class="ob-step-icon">&#128260;</div><div class="ob-step-text">Markera som "fast" om den upprepas varje månad</div></div>
+      <div class="ob-step-line"></div>
+      <div class="ob-step" id="obStep6"><div class="ob-step-icon">&#9878;&#65039;</div><div class="ob-step-text">Håll in knappen för egen uppdelning (50/50, anpassad m.m.)</div></div>
+    </div>
+    <button class="ob-btn" onclick="obGoTo(6)">Nästa</button>
+  </div>
+  <div class="ob-screen right" id="obScreen6">
+    <button class="ob-back" onclick="obGoTo(5)">&#8592;</button>
+    <div class="ob-heading">Föräldraledighet &#128118;</div>
+    <div class="ob-sub">Är någon av er föräldraledig? FairShare kan justera fördelningen och beräkna kompensation.</div>
+    <div class="ob-steps">
+      <div class="ob-step" id="obStep7"><div class="ob-step-icon">&#128118;</div><div class="ob-step-text">Aktivera föräldraledighet under Inställningar</div></div>
+      <div class="ob-step-line"></div>
+      <div class="ob-step" id="obStep8"><div class="ob-step-icon">&#128176;</div><div class="ob-step-text">Fyll i föräldrapenning och välj kompensation för pension och karriär</div></div>
+      <div class="ob-step-line"></div>
+      <div class="ob-step" id="obStep9"><div class="ob-step-icon">&#128200;</div><div class="ob-step-text">Se kompensationen i Översikten</div></div>
+    </div>
+    <button class="ob-btn" onclick="obGoTo(7)">Nästa</button>
+  </div>
+  <div class="ob-screen right" id="obScreen7">
+    <button class="ob-back" onclick="obGoTo(6)">&#8592;</button>
+    <div class="ob-heading">Gemensamma konton &#127974;</div>
+    <div class="ob-sub">Har ni gemensamma konton? Koppla utgifter till dem för bättre överblick.</div>
+    <div class="ob-steps">
+      <div class="ob-step" id="obStep10"><div class="ob-step-icon">&#127974;</div><div class="ob-step-text">Aktivera "Gemensamt konto" under Inställningar</div></div>
+      <div class="ob-step-line"></div>
+      <div class="ob-step" id="obStep11"><div class="ob-step-icon">&#10133;</div><div class="ob-step-text">Lägg till era konton med namn</div></div>
+      <div class="ob-step-line"></div>
+      <div class="ob-step" id="obStep12"><div class="ob-step-icon">&#128196;</div><div class="ob-step-text">Välj konto vid varje utgift</div></div>
+    </div>
+    <button class="ob-btn" onclick="obGoTo(8)">Nästa</button>
+  </div>
+  <div class="ob-screen right" id="obScreen8">
     <div class="ob-confetti" id="obConfetti"></div>
     <div class="ob-heading">Ni är redo! &#127881;</div>
     <div class="ob-sub">Här är en sammanfattning av era inställningar.</div>
@@ -433,7 +462,7 @@ input[type=number]{-moz-appearance:textfield}
   </div>
 </div>
 <div class="ob-dots" id="obDots">
-  <div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div>
+  <div class="ob-dot active"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div><div class="ob-dot"></div>
 </div>
 </div>
 
@@ -484,11 +513,7 @@ input[type=number]{-moz-appearance:textfield}
 </div>
 <div class="app-footer"><span>FairShare™ · Skapad av Bubba</span></div>
 <button class="help-fab" onclick="openHelp()" title="Hjälp">?</button>
-<div class="help-overlay" id="helpOverlay"><div class="help-modal"><div class="help-header"><h2>📖 Hjälp</h2><button class="help-close" onclick="closeHelp()">✕</button></div><div class="help-tabs"><button class="help-tab active" onclick="showHelpPage(0,this)">Grunderna</button><button class="help-tab" onclick="showHelpPage(1,this)">Utgifter</button><button class="help-tab" onclick="showHelpPage(2,this)">Översikt</button><button class="help-tab" onclick="showHelpPage(3,this)">Tips</button></div><div class="help-body"><div class="help-page active" id="helpPage0"><h3>Välkommen till FairShare!</h3><p>FairShare hjälper par och hushåll att fördela gemensamma utgifter rättvist utifrån inkomst.</p><div class="help-step"><div class="hs-num">1</div><div class="hs-text"><strong>Fyll i namn</strong> – Skriv era namn under Inställningar.</div></div><div class="help-step"><div class="hs-num">2</div><div class="hs-text"><strong>Ange bruttolöner</strong> – Nettolönen beräknas automatiskt.</div></div><div class="help-step"><div class="hs-num">3</div><div class="hs-text"><strong>Fördelningen uppdateras</strong> – Baserat på era nettolöner.</div></div><div class="help-step"><div class="hs-num">4</div><div class="hs-text"><strong>Lägg till utgifter</strong> – Under Utgifter-fliken.</div></div><div class="help-step"><div class="hs-num">5</div><div class="hs-text"><strong>Se resultatet</strong> – Under Översikt.</div></div><button class="help-tour-btn" onclick="closeHelp();startTour()">🎯 Starta guidad tur</button></div><div class="help-page" id="helpPage1"><h3>Utgifter</h3><p>Lägg till gemensamma kostnader. Markera som "fast" för automatisk upprepning varje månad.</p></div><div class="help-page" id="helpPage2"><h3>Översikt</h3><p>Visar totala utgifter, vad var och en ska betala, och vad som blir kvar.</p></div><div class="help-page" id="helpPage3"><h3>Tips</h3><p>📲 Spara inställningar som QR-kod. 📤 Exportera som bild eller rapport.</p><button class="help-tour-btn" onclick="closeHelp();startTour()">🎯 Kör guidad tur igen</button></div></div></div></div>
-<div class="tour-backdrop" id="tourBackdrop"></div>
-<div class="tour-highlight" id="tourHighlight" style="display:none"></div>
-<div class="tour-bubble" id="tourBubble" style="display:none"><div class="tb-step" id="tourStep"></div><div class="tb-msg" id="tourMsg"></div><div class="tb-btns"><button class="tb-skip" onclick="endTour()">Hoppa över</button><button class="tb-next" id="tourNextBtn" onclick="nextTourStep()">Nästa</button></div></div>
-<button class="tour-close" id="tourClose" onclick="endTour()">✕</button>
+<div class="help-overlay" id="helpOverlay"><div class="help-modal"><div class="help-header"><h2>📖 Hjälp</h2><button class="help-close" onclick="closeHelp()">✕</button></div><div class="help-tabs"><button class="help-tab active" onclick="showHelpPage(0,this)">Grunderna</button><button class="help-tab" onclick="showHelpPage(1,this)">Utgifter</button><button class="help-tab" onclick="showHelpPage(2,this)">Funktioner</button><button class="help-tab" onclick="showHelpPage(3,this)">Tips</button></div><div class="help-body"><div class="help-page active" id="helpPage0"><h3>Välkommen till FairShare!</h3><p>FairShare hjälper par och hushåll att fördela gemensamma utgifter rättvist utifrån inkomst.</p><div class="help-step"><div class="hs-num">1</div><div class="hs-text"><strong>Fyll i namn</strong> – Skriv era namn under Inställningar.</div></div><div class="help-step"><div class="hs-num">2</div><div class="hs-text"><strong>Ange bruttolöner</strong> – Nettolönen beräknas automatiskt med svensk skatteberäkning (kommunalskatt, begravningsavgift, kyrkoavgift m.m.).</div></div><div class="help-step"><div class="hs-num">3</div><div class="hs-text"><strong>Fördelningen uppdateras</strong> – Baserat på era nettolöner. Vill ni bestämma själva? Aktivera "Egen fördelning" och dra i slidern.</div></div><div class="help-step"><div class="hs-num">4</div><div class="hs-text"><strong>Lägg till utgifter</strong> – Under Utgifter-fliken. Välj kategori, markera som fast utgift och välj uppdelning (inkomst, 50/50, anpassad m.m.).</div></div><div class="help-step"><div class="hs-num">5</div><div class="hs-text"><strong>Se resultatet</strong> – Under Översikt ser du totala utgifter, vad var och en betalar, och vad som blir kvar.</div></div></div><div class="help-page" id="helpPage1"><h3>Utgifter</h3><p>Lägg till gemensamma kostnader under Utgifter-fliken.</p><div class="help-step"><div class="hs-num">+</div><div class="hs-text"><strong>Fast utgift</strong> – Markera en utgift som "fast" så kopieras den automatiskt till nästa månad.</div></div><div class="help-step"><div class="hs-num">⚖️</div><div class="hs-text"><strong>Egen uppdelning</strong> – Håll in "Lägg till"-knappen för att välja hur utgiften ska fördelas: inkomstbaserat, 50/50, bara en person, eller valfri procent.</div></div><div class="help-step"><div class="hs-num">🏦</div><div class="hs-text"><strong>Gemensamt konto</strong> – Aktivera under Inställningar och koppla utgifter till specifika konton.</div></div><div class="help-step"><div class="hs-num">📋</div><div class="hs-text"><strong>Månadsvy</strong> – Bläddra mellan månader med pilarna. Rensa en hel månad med "Rensa månad".</div></div></div><div class="help-page" id="helpPage2"><h3>Alla funktioner</h3><div class="help-step"><div class="hs-num">👶</div><div class="hs-text"><strong>Föräldraledighet</strong> – Aktivera under Inställningar. Välj vem som är ledig och fyll i föräldrapenning. Räkna med kompensation för pension, löneökning och valfri ersättning.</div></div><div class="help-step"><div class="hs-num">🏦</div><div class="hs-text"><strong>Gemensamma konton</strong> – Skapa konton och koppla utgifter till dem för bättre överblick.</div></div><div class="help-step"><div class="hs-num">⚖️</div><div class="hs-text"><strong>Egen fördelning</strong> – Stäng av den automatiska inkomstbaserade fördelningen och bestäm själva procenten.</div></div><div class="help-step"><div class="hs-num">📊</div><div class="hs-text"><strong>Översikt</strong> – Se totala utgifter, vad var och en ska betala, eventuell överföring och utgifter per kategori.</div></div><div class="help-step"><div class="hs-num">📤</div><div class="hs-text"><strong>Exportera</strong> – Dela som bild eller generera en detaljerad rapport med alla beräkningar.</div></div><div class="help-step"><div class="hs-num">📲</div><div class="hs-text"><strong>QR-kod</strong> – Spara alla inställningar och fasta utgifter som QR-kod att skanna på en annan enhet.</div></div></div><div class="help-page" id="helpPage3"><h3>Tips</h3><div class="help-step"><div class="hs-num">💡</div><div class="hs-text">Lägg till fasta utgifter (hyra, el, försäkring) en gång – de kopieras automatiskt varje månad.</div></div><div class="help-step"><div class="hs-num">💡</div><div class="hs-text">Använd "Egen uppdelning" på enskilda utgifter om t.ex. en kostnad ska delas 50/50 trots olika inkomster.</div></div><div class="help-step"><div class="hs-num">💡</div><div class="hs-text">Aktivera föräldraledighet för att automatiskt justera fördelningen och beräkna kompensation för pension och karriär.</div></div><div class="help-step"><div class="hs-num">💡</div><div class="hs-text">All data sparas lokalt på din enhet. Ingen information skickas till någon server.</div></div></div></div></div></div>
 <div class="toast" id="toast"></div>
 <div class="overlay" id="confirmOverlay"><div class="dialog"><h3>🗑️ Rensa utgifter?</h3><p>Alla utgifter för denna månad tas bort.</p><div class="dialog-btns"><button class="cancel" onclick="closeDialog()">Avbryt</button><button class="confirm" onclick="clearMonth()">Rensa</button></div></div></div>
 <div class="overlay" id="exportOverlay"><div class="dialog"><h3>📤 Exportera</h3><p>Välj format</p><button class="export-opt" onclick="exportImage()"><span class="eo-icon">🖼️</span><span class="eo-text"><strong>Dela som bild</strong><span>Snygg sammanställning att skicka</span></span></button><button class="export-opt" onclick="exportReport()"><span class="eo-icon">📄</span><span class="eo-text"><strong>Detaljerad rapport</strong><span>Med beräkningar och förklaringar</span></span></button><button class="export-cancel" onclick="closeExportDialog()">Avbryt</button></div></div>
@@ -501,7 +526,7 @@ var fixedChecked=false;var expSplit='ratio';var expSplitPct=50;
 var _escDiv=document.createElement('div');
 var _refreshTimer=0;
 var $={}; // cached DOM elements
-function cacheDom(){var ids=['name1','name2','gross1','gross2','taxKommunal','taxBegravning','taxChurch','fkNet','pensionPct','careerRate','leaveMonths','leaveAge','customPct','customCompName','churchToggle','churchPctWrap','taxBody','taxChevron','customToggle','customSliderWrap','ratioSlider','parentalToggle','parentalPanel','compPensionToggle','compCareerToggle','careerSub','compCustomToggle','customSub','sharedToggle','sharedSub','inc-label1','inc-label2','ratioName1','ratioName2','qsP1Label','qsP2Label','plBtnName1','plBtnName2','plBtn1','plBtn2','netVal1','netVal2','ratio1','ratio2','bar1','bar2','expenseList','expenseCount','qsTotal','qsP1','qsP2','monthDisplay','monthDisplay2','ovTotal','ovName1','ovName2','ovRatio1','ovRatio2','ovGross1','ovGross2','ovIncome1','ovIncome2','ovPay1','ovPay2','ovRemain1','ovRemain2','transferBox','leaveTag1','leaveTag2','ovFkRow1','ovFkRow2','ovFk1','ovFk2','pensionComp1','pensionComp2','categoryBreakdown','compSummary','compSummaryRows','compSummaryNote','careerInfo','fkWarning','expDesc','expAmount','expCategory','expAcctWrap','expAcct','fixedCheck','expSplitCustomWrap','expSplitPct','splitBtnRatio','splitBtn5050','splitBtnP1','splitBtnP2','splitBtnCustom','splitPopup','addBtn','addBtnLabel','acctList','acctNameInput','toast','confirmOverlay','exportOverlay','qrOverlay','qrImportOverlay','qrContainer','helpOverlay','tourBackdrop','tourHighlight','tourBubble','tourStep','tourMsg','tourNextBtn','tourClose'];for(var i=0;i<ids.length;i++)$[ids[i]]=document.getElementById(ids[i])}
+function cacheDom(){var ids=['name1','name2','gross1','gross2','taxKommunal','taxBegravning','taxChurch','fkNet','pensionPct','careerRate','leaveMonths','leaveAge','customPct','customCompName','churchToggle','churchPctWrap','taxBody','taxChevron','customToggle','customSliderWrap','ratioSlider','parentalToggle','parentalPanel','compPensionToggle','compCareerToggle','careerSub','compCustomToggle','customSub','sharedToggle','sharedSub','inc-label1','inc-label2','ratioName1','ratioName2','qsP1Label','qsP2Label','plBtnName1','plBtnName2','plBtn1','plBtn2','netVal1','netVal2','ratio1','ratio2','bar1','bar2','expenseList','expenseCount','qsTotal','qsP1','qsP2','monthDisplay','monthDisplay2','ovTotal','ovName1','ovName2','ovRatio1','ovRatio2','ovGross1','ovGross2','ovIncome1','ovIncome2','ovPay1','ovPay2','ovRemain1','ovRemain2','transferBox','leaveTag1','leaveTag2','ovFkRow1','ovFkRow2','ovFk1','ovFk2','pensionComp1','pensionComp2','categoryBreakdown','compSummary','compSummaryRows','compSummaryNote','careerInfo','fkWarning','expDesc','expAmount','expCategory','expAcctWrap','expAcct','fixedCheck','expSplitCustomWrap','expSplitPct','splitBtnRatio','splitBtn5050','splitBtnP1','splitBtnP2','splitBtnCustom','splitPopup','addBtn','addBtnLabel','acctList','acctNameInput','toast','confirmOverlay','exportOverlay','qrOverlay','qrImportOverlay','qrContainer','helpOverlay'];for(var i=0;i<ids.length;i++)$[ids[i]]=document.getElementById(ids[i])}
 function nowMonth(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')}
 function dn(p){return p===1?(S.name1||'Person 1'):(S.name2||'Person 2')}
 var _monthNames=['Januari','Februari','Mars','April','Maj','Juni','Juli','Augusti','September','Oktober','November','December'];
@@ -512,7 +537,7 @@ function getPensionLoss(){if(!S.parentalActive||!S.parentalPerson||!S.compPensio
 function getCareerLoss(){if(!S.parentalActive||!S.parentalPerson||!S.compCareer)return 0;var g=S.parentalPerson===1?S.gross1:S.gross2;var rate=S.careerRate/100;var months=S.leaveMonths||12;var age=S.leaveAge||30;var remainYears=Math.max(0,70-age);var lostRaisePerYear=g*rate*(months/12);var totalLoss=lostRaisePerYear*remainYears;return Math.ceil(totalLoss/months)}
 function getCustomLoss(){if(!S.parentalActive||!S.parentalPerson||!S.compCustom||!S.customPct)return 0;var g=S.parentalPerson===1?S.gross1:S.gross2;return Math.ceil(g*(S.customPct/100))}
 function getTotalComp(){return getPensionLoss()+getCareerLoss()+getCustomLoss()}
-function init(){cacheDom();loadState();applyUI();updateMonthDisplay();ensureFixedExpenses();refreshAll();initAddBtnLongPress();if(!localStorage.getItem('fairshare_onboarded')){showOnboarding()}else if(!localStorage.getItem('fairshare_toured')){setTimeout(startTour,600)}}
+function init(){cacheDom();loadState();applyUI();updateMonthDisplay();ensureFixedExpenses();refreshAll();initAddBtnLongPress();if(!localStorage.getItem('fairshare_onboarded')){showOnboarding()}}
 function loadState(){try{var s=localStorage.getItem('fairshare_v10');if(s){var p=JSON.parse(s);for(var k in p)if(p.hasOwnProperty(k))S[k]=p[k]}}catch(e){}if(!S.currentMonth)S.currentMonth=nowMonth();if(!S.expenses)S.expenses={};if(!S.accounts)S.accounts=[]}
 function save(){try{localStorage.setItem('fairshare_v10',JSON.stringify(S))}catch(e){}}
 function applyUI(){$['name1'].value=S.name1;$['name2'].value=S.name2;$['gross1'].value=S.gross1||'';$['gross2'].value=S.gross2||'';$['taxKommunal'].value=S.kommunalskatt;$['taxBegravning'].value=S.begravningsavgift;$['taxChurch'].value=S.churchPct;$['fkNet'].value=S.fkNet||'';$['pensionPct'].value=S.pensionPct;$['careerRate'].value=S.careerRate;$['leaveMonths'].value=S.leaveMonths;$['leaveAge'].value=S.leaveAge;$['customPct'].value=S.customPct||'';$['customCompName'].value=S.customCompName||'';if(S.churchTax){$['churchToggle'].classList.add('active');$['churchPctWrap'].style.opacity='1';$['churchPctWrap'].style.pointerEvents='auto'}if(S.taxExpanded){$['taxBody'].classList.add('open');$['taxChevron'].classList.add('open')}if(S.customRatio){$['customToggle'].classList.add('active');$['customSliderWrap'].style.display='block';$['ratioSlider'].value=S.ratio1}if(S.parentalActive){$['parentalToggle'].classList.add('active');$['parentalPanel'].classList.add('open');if(S.parentalPerson)setParentalPersonUI(S.parentalPerson)}if(S.compPension)$['compPensionToggle'].classList.add('active');if(S.compCareer){$['compCareerToggle'].classList.add('active');$['careerSub'].classList.add('open')}if(S.compCustom){$['compCustomToggle'].classList.add('active');$['customSub'].classList.add('open')}if(S.sharedAccount){$['sharedToggle'].classList.add('active');$['sharedSub'].classList.add('open')}updateNames();updateNetDisplays();updateRatioDisplay();updateCompSummary();updateFkWarning();renderAccounts();updateAcctSelect()}
@@ -595,22 +620,6 @@ function applyQRData(jsonStr){try{var d=JSON.parse(jsonStr);if(!d.v||!d.n)throw'
 function openHelp(){$['helpOverlay'].classList.add('show')}
 function closeHelp(){$['helpOverlay'].classList.remove('show')}
 function showHelpPage(idx,btn){document.querySelectorAll('.help-page').forEach(function(p){p.classList.remove('active')});document.querySelectorAll('.help-tab').forEach(function(t){t.classList.remove('active')});document.getElementById('helpPage'+idx).classList.add('active');if(btn)btn.classList.add('active')}
-var tourActive=false,tourIdx=0;
-var tourSteps=[
-  {msg:'Välkommen till FairShare! 👋\n\nDen här guiden hjälper dig komma igång steg för steg.',target:null,tab:'setup',btn:'Sätt igång!'},
-  {msg:'Börja med att skriva era namn.\n\nFyll i båda fälten – de används i hela appen.',target:'nameCard',tab:'setup',wait:'name1',btn:'Nästa'},
-  {msg:'Ange era bruttolöner (före skatt).\n\nNettolönen beräknas automatiskt och styr fördelningen.',target:'incomeCard',tab:'setup',wait:'gross1',btn:'Nästa'},
-  {msg:'Här ser du fördelningen! ⚖️\n\nDen beräknas automatiskt utifrån era nettoinkomster.',target:'ratioCard',tab:'setup',btn:'Nästa'},
-  {msg:'Nu byter vi till Utgifter! 💰\n\nDär lägger ni till gemensamma kostnader.',target:'mainTabs',tab:'expenses',btn:'Nästa'},
-  {msg:'Skriv en beskrivning, ange belopp och välj kategori.\n\nTesta att lägga till en utgift nu!',target:'expenseFormCard',tab:'expenses',wait:'addExpense',btn:'Väntar...'},
-  {msg:'Bra jobbat! 🎉\n\nLåt oss kolla översikten där allt sammanställs.',target:'mainTabs',tab:'overview',btn:'Nästa'},
-  {msg:'Här ser du totala utgifter och vad var och en ska betala.\n\nKlart! Tryck på ?-knappen för mer hjälp.',target:'overviewTotal',tab:'overview',btn:'Klar!'}
-];
-function startTour(){tourActive=true;tourIdx=0;showTourStep()}
-function endTour(){tourActive=false;$['tourBackdrop'].classList.remove('show');$['tourHighlight'].style.display='none';$['tourBubble'].style.display='none';$['tourClose'].classList.remove('show');localStorage.setItem('fairshare_toured','1')}
-function showTourStep(){if(tourIdx>=tourSteps.length){endTour();return}var step=tourSteps[tourIdx];if(step.tab){var tabBtn=document.querySelector('.tab[data-section="'+step.tab+'"]');if(tabBtn)showSection(step.tab,tabBtn)}$['tourClose'].classList.add('show');var backdrop=$['tourBackdrop'],highlight=$['tourHighlight'],bubble=$['tourBubble'];setTimeout(function(){$['tourStep'].textContent='Steg '+(tourIdx+1)+' av '+tourSteps.length;$['tourMsg'].textContent=step.msg;var nb=$['tourNextBtn'];nb.textContent=step.btn||'Nästa';nb.style.opacity=step.wait==='addExpense'?'.4':'1';if(step.target){var el=document.getElementById(step.target);if(el){el.scrollIntoView({behavior:'smooth',block:'center'});setTimeout(function(){var r=el.getBoundingClientRect();var pad=8;backdrop.classList.add('show');highlight.style.display='block';highlight.style.left=(r.left-pad)+'px';highlight.style.top=(r.top-pad)+'px';highlight.style.width=(r.width+pad*2)+'px';highlight.style.height=(r.height+pad*2)+'px';var bt=r.bottom+16;if(r.bottom+220>window.innerHeight)bt=r.top-220;if(bt<10)bt=10;bubble.style.display='block';bubble.style.left=Math.max(24,Math.min(r.left,window.innerWidth-340))+'px';bubble.style.top=bt+'px';if(step.wait&&step.wait!=='addExpense'){var inp=document.getElementById(step.wait);if(inp)inp.focus()}},400)}}else{backdrop.classList.add('show');highlight.style.display='none';bubble.style.display='block';bubble.style.left=((window.innerWidth-300)/2)+'px';bubble.style.top=(window.innerHeight*0.3)+'px'}},150)}
-function nextTourStep(){var step=tourSteps[tourIdx];if(step&&step.wait==='addExpense')return;tourIdx++;showTourStep()}
-document.addEventListener('input',function(e){if(!tourActive)return;var step=tourSteps[tourIdx];if(step&&step.wait&&step.wait===e.target.id&&e.target.value.length>0){$['tourNextBtn'].style.opacity='1';$['tourNextBtn'].textContent='Nästa'}});
 document.addEventListener('keydown',function(e){if(e.key==='Enter'){var el=document.activeElement;if(el&&(el.id==='expDesc'||el.id==='expAmount'))addExpense();if(el&&el.id==='acctNameInput')addAccount()}});
 
 /* Onboarding */
@@ -638,18 +647,25 @@ var dots=document.querySelectorAll('#obDots .ob-dot');for(var i=0;i<dots.length;
 obCurrent=idx;
 if(idx===3)setTimeout(obAnimateRatio,300);
 if(idx===4)setTimeout(obAnimateSteps,200);
-if(idx===5)setTimeout(obAnimateSummary,200)}
+if(idx===5)setTimeout(function(){obAnimateNewSteps('obStep4','obStep5','obStep6')},200);
+if(idx===6)setTimeout(function(){obAnimateNewSteps('obStep7','obStep8','obStep9')},200);
+if(idx===7)setTimeout(function(){obAnimateNewSteps('obStep10','obStep11','obStep12')},200);
+if(idx===8)setTimeout(obAnimateSummary,200)}
 
 function obAnimateRatio(){var n1=obData.name1||'Person 1',n2=obData.name2||'Person 2';document.getElementById('obRLabel1').textContent=n1;document.getElementById('obRLabel2').textContent=n2;document.getElementById('obSliderName1').textContent=n1;document.getElementById('obSliderName2').textContent=n2;
 var b1=document.getElementById('obRBadge1'),b2=document.getElementById('obRBadge2');b1.textContent=obData.ratio1+'%';b2.textContent=obData.ratio2+'%';b1.classList.remove('show');b2.classList.remove('show');
 var f1=document.getElementById('obRFill1'),f2=document.getElementById('obRFill2');f1.style.width='50%';f2.style.width='50%';
 var rt=document.getElementById('obRText');rt.classList.remove('show');rt.textContent=n1+' betalar '+obData.ratio1+'% och '+n2+' betalar '+obData.ratio2+'% av gemensamma utgifter.';
 var cra=document.getElementById('obCustomRatioArea'),at=document.getElementById('obAdjustText');cra.classList.remove('show');at.classList.remove('show');document.getElementById('obCustomSlider').value=obData.ratio1;document.getElementById('obCustomVal1').textContent=obData.ratio1+'%';document.getElementById('obCustomVal2').textContent=obData.ratio2+'%';
-setTimeout(function(){b1.classList.add('show');setTimeout(function(){b2.classList.add('show')},150);setTimeout(function(){f1.style.width=obData.ratio1+'%';f2.style.width=obData.ratio2+'%';rt.classList.add('show')},300);setTimeout(function(){cra.classList.add('show');setTimeout(function(){at.classList.add('show')},600)},2500)},200)}
+setTimeout(function(){b1.classList.add('show');setTimeout(function(){b2.classList.add('show')},150);setTimeout(function(){f1.style.width=obData.ratio1+'%';f2.style.width=obData.ratio2+'%';rt.classList.add('show')},300);setTimeout(function(){document.getElementById('obCustomBtn').style.display='block';setTimeout(function(){at.classList.add('show')},600)},2500)},200)}
+
+function obShowCustomRatio(){var cra=document.getElementById('obCustomRatioArea');cra.classList.add('show');document.getElementById('obCustomBtn').style.display='none'}
 
 function obUpdateCustomRatio(){var v=parseInt(document.getElementById('obCustomSlider').value);obData.ratio1=v;obData.ratio2=100-v;obData.customRatio=true;document.getElementById('obCustomVal1').textContent=v+'%';document.getElementById('obCustomVal2').textContent=(100-v)+'%';document.getElementById('obRBadge1').textContent=v+'%';document.getElementById('obRBadge2').textContent=(100-v)+'%';document.getElementById('obRFill1').style.width=v+'%';document.getElementById('obRFill2').style.width=(100-v)+'%';var n1=obData.name1||'Person 1',n2=obData.name2||'Person 2';document.getElementById('obRText').textContent=n1+' betalar '+v+'% och '+n2+' betalar '+(100-v)+'% av gemensamma utgifter.'}
 
 function obAnimateSteps(){['obStep1','obStep2','obStep3'].forEach(function(id){document.getElementById(id).classList.remove('show')});['obStep1','obStep2','obStep3'].forEach(function(id,i){setTimeout(function(){document.getElementById(id).classList.add('show')},i*300+100)})}
+
+function obAnimateNewSteps(a,b,c){[a,b,c].forEach(function(id){document.getElementById(id).classList.remove('show')});[a,b,c].forEach(function(id,i){setTimeout(function(){document.getElementById(id).classList.add('show')},i*300+100)})}
 
 function obAnimateSummary(){var n1=obData.name1||'Person 1',n2=obData.name2||'Person 2';document.getElementById('obSName1').textContent=n1;document.getElementById('obSName2').textContent=n2;document.getElementById('obSNet1').textContent='Netto: '+obFmt(obData.net1)+' kr';document.getElementById('obSNet2').textContent='Netto: '+obFmt(obData.net2)+' kr';document.getElementById('obSBadge1').textContent=obData.ratio1+'%';document.getElementById('obSBadge2').textContent=obData.ratio2+'%';obSpawnConfetti()}
 
